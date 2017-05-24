@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <PreferenceCategory android:title="@string/card_read_settings">
+        <ListPreference
+            android:defaultValue="2"
+            android:dialogTitle="@string/title_read_interval"
+            android:entries="@array/read_interval_arr"
+            android:entryValues="@array/read_interval_arr_values"
+            android:key="@string/pref_key_read"
+            android:summary="@string/summary_read"
+            android:title="@string/title_read_interval" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/face_detect_settings">
+        <ListPreference
+            android:defaultValue="10"
+            android:dialogTitle="@string/title_comparison_time"
+            android:entries="@array/effective_comparison_time"
+            android:entryValues="@array/effective_comparison_time_values"
+            android:key="@string/pref_key_comparison_time"
+            android:summary="@string/summary_comparison_effective"
+            android:title="@string/title_comparison_time" />
+        <ListPreference
+            android:defaultValue="70"
+            android:dialogTitle="@string/title_comparison_threshold"
+            android:entries="@array/compare_threshold_arr"
+            android:entryValues="@array/compare_threshold_arr_values"
+            android:key="@string/pref_key_comparison_threshold"
+            android:summary="@string/summary_comparison_threshold"
+            android:title="@string/title_comparison_threshold" />
+    </PreferenceCategory>
+</PreferenceScreen>

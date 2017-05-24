@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/brown_700"> <!-- 水波纹颜色-->
+    <!-- 正常的背景色 V21以下无水波纹效果时显示的背景-->
+    <item android:drawable="@drawable/x_btn_style_grey" />
+</ripple>

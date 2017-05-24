@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:adjustViewBounds="false"
+        android:src="@drawable/avart" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="30dp"
+        android:scrollbars="none">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1"
+            android:stretchColumns="1">
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_name" />
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_sex" />
+
+                <TextView
+                    android:id="@+id/tv_sex"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_nation" />
+
+                <TextView
+                    android:id="@+id/tv_nation"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_birth" />
+
+                <TextView
+                    android:id="@+id/tv_birth"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_address" />
+
+                <TextView
+                    android:id="@+id/tv_address"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_id" />
+
+                <TextView
+                    android:id="@+id/tv_id"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_authority" />
+
+                <TextView
+                    android:id="@+id/tv_official"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+            <TableRow android:padding="5dp">
+
+                <TextView
+                    style="@style/TextStyle_Read_left"
+                    android:text="@string/card_volidate" />
+
+                <TextView
+                    android:id="@+id/tv_valid"
+                    style="@style/TextStyle_Read_right" />
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
+</LinearLayout>

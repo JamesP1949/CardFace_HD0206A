@@ -1,0 +1,26 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/brown_700</item>
+        <item name="colorPrimaryDark">@color/brown_900</item>
+        <item name="colorAccent">@color/teal_400</item>
+    </style>
+
+
+    <style name="TextStyle_Read_left">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:gravity">right</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextStyle_Read_right">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/brown_700</item>
+    </style>
+</resources>

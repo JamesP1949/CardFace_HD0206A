@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">CardFace_HD0206A</string>
+    <string name="long_term">长期</string>
+    <string name="exist">存在</string>
+    <string name="not_exist">不存在</string>
+    <string name="card_name">姓名：</string>
+    <string name="card_sex">性别：</string>
+    <string name="card_nation">民族：</string>
+    <string name="card_birth">出生日期：</string>
+    <string name="card_address">住址：</string>
+    <string name="card_id">身份证号码：</string>
+    <string name="card_authority">签发机关：</string>
+    <string name="card_volidate">有效期：</string>
+    <string name="action_query">查询</string>
+    <string name="action_delete_all">清除记录</string>
+    <string name="action_export">数据导出</string>
+
+    <string name="query_hint">请输入姓名查询</string>
+    <string name="title_read_interval">读卡间隔</string>
+    <string name="summary_read">为读卡器设置循环读卡间隔</string>
+    <string name="action_settings">设置</string>
+    <string name="face_detect_settings">人脸比对设置</string>
+    <string name="card_read_settings">读卡设置</string>
+    <string name="pref_key_read">card_read</string>
+    <string name="title_comparison_time">比对时间</string>
+    <string name="summary_comparison_effective">比对时,人脸信息收集有效时长</string>
+    <string name="pref_key_comparison_time">Effective comparison time</string>
+    <string name="title_comparison_threshold">比对阈值</string>
+    <string name="summary_comparison_threshold">现场照与证件照的相似度,阈值越大相似度越高,但匹配通过率越低, 请合理选择</string>
+    <string name="pref_key_comparison_threshold">comparison_threshlod</string>
+
+
+</resources>
