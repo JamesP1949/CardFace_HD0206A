@@ -7,7 +7,7 @@ import com.common.base.BasePresenter;
 import com.common.rx.SchedulersCompat;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.socks.library.KLog;
-import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.bean.DaoManager;
 import com.wis.bean.Person;
 import com.wis.utils.ExportCsv;
@@ -15,6 +15,8 @@ import com.wis.utils.ExportCsv;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -37,10 +39,12 @@ import io.reactivex.schedulers.Schedulers;
 public class QueryPresenter extends BasePresenter<QueryContract.View> implements
         QueryContract.Presenter {
 
-    private DaoManager mDaoManager;
+    @Inject
+    DaoManager mDaoManager;
 
-    public QueryPresenter() {
-        mDaoManager = App.getInstance().getDaoManager();
+    @Override
+    protected void injectDagger() {
+        AppCore.getAppComponent().inject(this);
     }
 
     @Override
@@ -179,6 +183,7 @@ public class QueryPresenter extends BasePresenter<QueryContract.View> implements
                         List<Person> persons = mDaoManager.queryAllPersons();
                         KLog.e("数据-----" + persons.size());
                         String xlsPath = ExportCsv.exportCsv(persons);
+                        mDaoManager.deleteAllPersons();
                         e.onNext(xlsPath);
                         e.onComplete();
                     }
@@ -197,6 +202,7 @@ public class QueryPresenter extends BasePresenter<QueryContract.View> implements
                             mView.showLongToast("请确保数据库内存储有效数据");
                         else if (s.endsWith(".csv")) {
                             mView.showLongToast("文件导出成功, 存储路径：" + s);
+                            mView.updateUIAfterExport();
                         }
                     }
 

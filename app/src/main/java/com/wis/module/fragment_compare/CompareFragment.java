@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,6 +25,7 @@ import com.common.widget.DrawImageView_;
 import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.bean.Compare;
 import com.wis.utils.GlobalConstant;
 import com.wis.widget.CameraPreview_;
@@ -36,6 +36,8 @@ import java.io.OutputStreamWriter;
 import java.lang.ref.Reference;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -71,14 +73,22 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     private int countInterval; //计时间隔
     private float c_threshold; //比对阈值
 
+    @Inject
+    ComparePresenter_ mPresenter;
+    @Inject
+    SharedPreferences defaultPreferences;
     @Override
     public int getLayoutId() {
         return R.layout.fragment_compare;
     }
 
     @Override
-    protected ComparePresenter_ getPresenter() {
-        return new ComparePresenter_();
+    protected void injectDagger() {
+        DaggerCompareComponent.builder()
+                .appComponent(AppCore.getAppComponent())
+                .compareModule(new CompareModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -161,22 +171,15 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
 
     @Override
     public void getCountdownInterval() {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        String countIntervalStr = sharedPreferences.getString(getString(R.string
+        String countIntervalStr = defaultPreferences.getString(getString(R.string
                 .pref_key_comparison_time), "10");
         countInterval = Integer.parseInt(countIntervalStr);
     }
 
     @Override
     public void getC_threshold() {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        String thresholdStr = sharedPreferences.getString(getString(R.string
+        String thresholdStr = defaultPreferences.getString(getString(R.string
                 .pref_key_comparison_threshold), "70");
-        KLog.e("thresholdStr---" + thresholdStr);
-
-
         c_threshold = Float.parseFloat(thresholdStr);
         KLog.e("比对阈值---" + c_threshold);
     }

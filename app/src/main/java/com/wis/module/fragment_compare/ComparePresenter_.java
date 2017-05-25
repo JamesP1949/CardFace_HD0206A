@@ -11,9 +11,12 @@ import com.common.utils.RxCountdown;
 import com.common.utils.StringUtils;
 import com.socks.library.KLog;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.bean.Compare;
+import com.wis.bean.DaoManager;
 import com.wis.bean.Person;
 import com.wis.config.UserConfig;
+import com.wis.face.WisMobile;
 import com.wis.utils.FeatureUtils;
 
 import org.reactivestreams.Publisher;
@@ -23,6 +26,8 @@ import org.reactivestreams.Subscription;
 import java.lang.ref.Reference;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.Notification;
@@ -46,6 +51,15 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
     private Disposable mCountDisposable;
     private Subscription mSubscription;
     private WeakMemoryCache mMemoryCache = App.getInstance().getWeakMemoryCache();
+    @Inject
+    DaoManager mDaoManager;
+    @Inject
+    WisMobile mWisMobile;
+
+    @Override
+    protected void injectDagger() {
+        AppCore.getAppComponent().inject(this);
+    }
 
     @Override
     public void compare(final float threshold) {
@@ -76,7 +90,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                             KLog.e("图片被回收掉了-----");
                             return Flowable.empty();
                         }
-                        String[] feature_ = FeatureUtils.extractFeature_(compare
+                        String[] feature_ = FeatureUtils.extractFeature_(mWisMobile, compare
                                 .getBitmap());
                         // 6. 过滤条件：图片提取的人脸特征不为空
                         if (TextUtils.isEmpty(feature_[1])) {
@@ -117,7 +131,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                                     .getFaceFeature();
                             float[] compareFea = StringUtils.split2FloatArr(compare
                                     .getFaceFeature());
-                            float score = FeatureUtils.compare2IdCard(compareFea,
+                            float score = FeatureUtils.compare2IdCard(mWisMobile, compareFea,
                                     cardFaceFeature);
                             KLog.e("比对分数：" + score);
                             compare.setCompareScore(score);
@@ -265,7 +279,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                 person.setDetectPhotoPath(FileUtils.saveBitmap2File(App.getInstance(),
                         String.valueOf(compare.getCompareTime()),
                         compare.getCropBitmap()));
-                long insert = App.getInstance().getDaoManager().insertPerson(person);
+                long insert = mDaoManager.insertPerson(person);
                 KLog.e("插入数据成功---insert：" + insert);
             }
         });

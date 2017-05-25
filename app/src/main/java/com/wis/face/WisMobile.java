@@ -8,6 +8,8 @@ import com.socks.library.KLog;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 /**
  * Created by wis on 16-7-26.
  */
@@ -18,6 +20,10 @@ public class WisMobile {
         System.loadLibrary("wis_engine_jni");
     }
 
+    @Inject
+    public WisMobile() {
+    }
+
     /**
      * 两张人脸照片进行比对,返回相似度(0~1)之间, 如果大于0.5就代表很相似,如果超过0.9表示两个照片属于同一个人的概率极大
      *
@@ -25,8 +31,8 @@ public class WisMobile {
      */
     public float calculate2ImageSimilarity(String imgFile1, String imgFile2) {
 
-            KLog.e("imgFile1--" + imgFile1);
-            KLog.e("imgFile2--" + imgFile2);
+        KLog.e("imgFile1--" + imgFile1);
+        KLog.e("imgFile2--" + imgFile2);
         //请自行判断两个文件的存在性,sdk内部不做文件是否存在判断
         Bitmap bmp1 = BitmapFactory.decodeFile(imgFile1);
         Bitmap bmp2 = BitmapFactory.decodeFile(imgFile2);

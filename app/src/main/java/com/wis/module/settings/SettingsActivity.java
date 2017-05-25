@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.common.base.BasePresenter;
 import com.common.base.BaseToolBarActivity;
 import com.wis.R;
 
@@ -21,13 +20,8 @@ public class SettingsActivity extends BaseToolBarActivity {
     }
 
     @Override
-    public void hideStatusBar() {
-
-    }
-
-    @Override
-    public BasePresenter getPresenter() {
-        return null;
+    protected void injectDagger() {
+        // do nothing...
     }
 
     @Override

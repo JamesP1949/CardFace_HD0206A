@@ -1,6 +1,6 @@
-package com.wis.module.query;
+package com.wis.module.fragment_compare;
 
-import com.common.scope.ActivityScope;
+import com.common.scope.FragmentScope;
 import com.wis.application.AppComponent;
 
 import dagger.Component;
@@ -9,8 +9,8 @@ import dagger.Component;
  * Created by JamesP949 on 2017/5/24.
  * Function:
  */
-@ActivityScope
-@Component(dependencies = AppComponent.class, modules = QueryModule.class)
-public interface QueryComponent {
-    void inject(QueryActivity activity);
+@FragmentScope
+@Component(dependencies = AppComponent.class, modules = CompareModule.class)
+public interface CompareComponent {
+    void inject(CompareFragment fragment);
 }

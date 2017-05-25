@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -22,16 +21,13 @@ import android.widget.Toast;
 import com.common.R;
 import com.socks.library.KLog;
 
-import butterknife.ButterKnife;
-
 
 /**
  * Created by JamesP949 on 2016/11/18.
  */
 
-public abstract class BaseToolBarActivity<T extends BasePresenter> extends AppCompatActivity
+public abstract class BaseToolBarActivity<T extends BasePresenter> extends BaseActivity<T>
         implements IView {
-    protected T mPresenter;
     public Toolbar mToolbar;
     /**
      * Toolbar左侧按钮的样式
@@ -43,29 +39,7 @@ public abstract class BaseToolBarActivity<T extends BasePresenter> extends AppCo
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideStatusBar();
-        setContentView(getLayoutResId());
-        ButterKnife.bind(this);
         initToolbar();
-        if (mPresenter == null)
-            mPresenter = getPresenter();
-        if (mPresenter != null)
-            mPresenter.attachView(this);
-    }
-
-    // 获取布局layoutId
-    public abstract int getLayoutResId();
-
-    public abstract void hideStatusBar();
-
-    public abstract T getPresenter();
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
-        if (mPresenter != null)
-            mPresenter.detachView();
     }
 
     @Override

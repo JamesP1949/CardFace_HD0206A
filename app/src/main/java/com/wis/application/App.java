@@ -1,47 +1,46 @@
 package com.wis.application;
 
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.common.base.BaseApplication;
 import com.common.cache.LruMemoryCache;
 import com.common.cache.WeakMemoryCache;
 import com.common.safety_crash.SafetyCrashHandler;
 import com.socks.library.KLog;
 import com.wis.BuildConfig;
-import com.wis.bean.DaoManager;
 import com.wis.config.AppConfig;
-import com.wis.config.SettingConfig;
 import com.wis.config.UserConfig;
 import com.wis.face.WisMobile;
 import com.wis.service.WorkService;
+
+import javax.inject.Inject;
 
 /**
  * Created by JamesP949 on 2017/4/28.
  * Function:
  */
 
-public class App extends Application {
+public class App extends BaseApplication {
     private static App mInstance;
     public static boolean isConnect;
     private static boolean flag;
-    private WisMobile wisMobile;
     private UserConfig mUserConfig;
-    private SettingConfig mSettingConfig;
-    private DaoManager mDaoManager;
     private LruMemoryCache mLruMemoryCache;
     private WeakMemoryCache mWeakMemoryCache;
+    @Inject
+    WisMobile wisMobile;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        AppCore.init(this);
         mInstance = this;
         SafetyCrashHandler.getInstance().init(this);
         mUserConfig = UserConfig.getInstance(this);
-        mSettingConfig = SettingConfig.getInstance(this);
-        mDaoManager = DaoManager.getInstance(this);
         mLruMemoryCache = new LruMemoryCache(16 * 1024 * 1024);
         mWeakMemoryCache = new WeakMemoryCache();
         KLog.init(BuildConfig.LOG_DEBUG, "JamesP1949");
@@ -53,14 +52,6 @@ public class App extends Application {
 
     public UserConfig getUserConfig() {
         return mUserConfig;
-    }
-
-    public SettingConfig getSettingConfig() {
-        return mSettingConfig;
-    }
-
-    public DaoManager getDaoManager() {
-        return mDaoManager;
     }
 
     public LruMemoryCache getLruMemoryCache() {
@@ -101,8 +92,8 @@ public class App extends Application {
     public void bindService() {
         isConnect = true;
         flag = true;
-        Intent intent = new Intent(mInstance, WorkService.class);
-        mInstance.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, WorkService.class);
+        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         KLog.e("调用了bindService方法");
     }
 
@@ -111,14 +102,13 @@ public class App extends Application {
         if (flag == true) {
             flag = false;
             isConnect = false;
-            mInstance.unbindService(mServiceConnection);
+            unbindService(mServiceConnection);
             KLog.e("调用了unBind方法");
         }
     }
 
     public void setReStartReader() {
         if (mBinder != null) {
-            KLog.e("setReStartReader=---1");
             mBinder.setReStart();
         }
     }

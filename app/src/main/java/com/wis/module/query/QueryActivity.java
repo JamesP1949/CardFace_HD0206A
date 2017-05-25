@@ -19,13 +19,15 @@ import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
 import com.socks.library.KLog;
 import com.wis.R;
-import com.wis.application.App;
-import com.wis.bean.DaoManager;
+import com.wis.application.AppCore;
 import com.wis.bean.Person;
 import com.wis.module.adapter.PersonAdapter;
 import com.wis.widget.PhotoPopWin;
 
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -39,7 +41,6 @@ import io.reactivex.schedulers.Schedulers;
 public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implements QueryContract
         .View {
 
-
     @Bind(R.id.et_search)
     AppCompatEditText mEtSearch;
     @Bind(R.id.iv_tips)
@@ -47,8 +48,18 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
     @Bind(R.id.recyclerView)
     EasyRecyclerView mRecyclerView;
 
-    private PersonAdapter mAdapter;
-    private PhotoPopWin mPopWin;
+    @Inject
+    QueryPresenter mPresenter;
+
+    @Inject
+    @Named("query")
+    PersonAdapter mAdapter;
+    @Inject
+    @Named("query")
+    PhotoPopWin mPopWin;
+    @Inject
+    DividerDecoration decoration;
+
     private CustomProgressDialog mProgressDialog;
     private int startIndex = 0;
     private boolean hasMore;
@@ -59,13 +70,12 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
     }
 
     @Override
-    public void hideStatusBar() {
-        // do nothing...
-    }
-
-    @Override
-    public QueryPresenter getPresenter() {
-        return new QueryPresenter();
+    protected void injectDagger() {
+        DaggerQueryComponent.builder()
+                .appComponent(AppCore.getAppComponent())
+                .queryModule(new QueryModule(this))
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -78,10 +88,7 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
         setToolbarTitle("查询");
         setToolbarIndicator(true);
         menuId = R.menu.menu_query;
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new PersonAdapter(this);
-        DividerDecoration decoration = new DividerDecoration(R.color.grey_600, 1, 0, 0);
         mRecyclerView.addItemDecoration(decoration);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setErrorView(R.layout.x_common_query_error_view);
@@ -92,7 +99,6 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
             public void onItemClick(int position) {
                 //TODO 显示证件照 现场照 姓名
                 Person record = mAdapter.getItem(position);
-                mPopWin = new PhotoPopWin(QueryActivity.this);
                 mPopWin.setImageData(record.getDetectPhotoPath(), record.getIdCardPhotoPath());
                 mPopWin.show(mRecyclerView);
             }
@@ -134,13 +140,12 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
         Schedulers.newThread().scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                DaoManager daoManager = App.getInstance().getDaoManager();
-                List<Person> persons = daoManager.queryAllPersons();
+                /*List<Person> persons = mDaoManager.queryAllPersons();
                 if (persons.isEmpty()) return;
                 Person person = persons.get(0);
                 float similarity = App.getInstance().getWisMobile().calculate2ImageSimilarity(person
                         .getIdCardPhotoPath(), person.getDetectPhotoPath());
-                KLog.e("比对结果---" + similarity);
+                KLog.e("比对结果---" + similarity);*/
             }
         });
     }
@@ -232,6 +237,13 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
         if (persons.isEmpty())
             mRecyclerView.showError();
         mAdapter.addAll(persons);
+    }
+
+    @Override
+    public void updateUIAfterExport() {
+        startIndex = 0;
+        // 清空数据
+        mAdapter.clear();
     }
 
 

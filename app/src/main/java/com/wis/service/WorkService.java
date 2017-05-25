@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -13,12 +12,16 @@ import com.common.utils.FileUtils;
 import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.config.UserConfig;
+import com.wis.face.WisMobile;
 import com.wis.utils.GlobalConstant;
 import com.wis.utils.ReadIdCardTaskImpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 import cn.com.aratek.idcard.IDCard;
 import cn.com.aratek.idcard.IDCardReader;
@@ -31,7 +34,6 @@ import cn.com.aratek.util.Result;
 
 public class WorkService extends Service {
     public MyBinder mBinder = new MyBinder();
-    private IDCardReader mReader;
     private WorkThread mThread;
     private ReadIdCardTaskImpl mTask;
     private Object mServiceLock = new Object();
@@ -40,9 +42,14 @@ public class WorkService extends Service {
     private boolean entranceFlag = true;
     private boolean readTaskFlag = false;
     private boolean isReadIntervalChanged = false;
-    private String mPhotoPath;
     private long readInterval;
-    private SharedPreferences mDefaultSharedPreferences;
+
+    @Inject
+    IDCardReader mReader;
+    @Inject
+    SharedPreferences mDefaultSharedPreferences;
+    @Inject
+    WisMobile mWisMobile;
 
     @Nullable
     @Override
@@ -53,15 +60,20 @@ public class WorkService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mDefaultSharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        injectDagger();
         String intervalStr = mDefaultSharedPreferences.getString(getString(R.string
                 .pref_key_read), "2");
         readInterval = Long.parseLong(intervalStr) * 1000; // 转换为毫秒
-
-        mReader = IDCardReader.getInstance();
         mThread = new WorkThread();
         mThread.start();
+    }
+
+    private void injectDagger() {
+        DaggerServiceComponent.builder()
+                .appComponent(AppCore.getAppComponent())
+                .serviceModule(new ServiceModule(this))
+                .build()
+                .inject(this);
     }
 
     public class WorkThread extends Thread {
@@ -154,7 +166,7 @@ public class WorkService extends Service {
                 String bitmap2File = FileUtils.saveBitmap2File(WorkService.this,
                         card.getName(), card.getPhoto());
                 config.setImagePath(bitmap2File);
-                float[] detectFace = App.getInstance().getWisMobile().detectFace(card.getPhoto());
+                float[] detectFace = mWisMobile.detectFace(card.getPhoto());
                 config.setFaceFeature(detectFace);
                 KLog.e("CardInfo：" + bitmap2File);
             }
@@ -188,8 +200,6 @@ public class WorkService extends Service {
     public class MyBinder extends Binder {
         public void setReStart() {
             if (isReadIntervalChanged) {
-                mDefaultSharedPreferences = PreferenceManager
-                        .getDefaultSharedPreferences(WorkService.this);
                 String intervalStr = mDefaultSharedPreferences.getString(getString(R.string
                         .pref_key_read), "2");
                 readInterval = Long.parseLong(intervalStr) * 1000; // 转换为毫秒

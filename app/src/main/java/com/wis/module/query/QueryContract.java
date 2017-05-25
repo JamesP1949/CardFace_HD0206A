@@ -21,6 +21,7 @@ public interface QueryContract {
         void tipSwitch(boolean isEmpty);
         void updateUI(List<Person> persons);
         void updateUIAfterQuery(List<Person> persons);
+        void updateUIAfterExport();
         void delete(int pos);
         void clearUI();
     }

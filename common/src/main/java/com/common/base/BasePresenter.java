@@ -14,6 +14,15 @@ public abstract class BasePresenter<T extends IView> implements IPresenter<T> {
     private CompositeDisposable mCompositeDisposable;
     protected T mView;
 
+    public BasePresenter() {
+        injectDagger();
+    }
+
+    /**
+     *  使用Component(注入器/注解类)向目标类中注入依赖
+     */
+    protected abstract void injectDagger();
+
     protected void addSubscribe(Disposable disposable) {
         if (mCompositeDisposable == null) {
             mCompositeDisposable = new CompositeDisposable();
@@ -22,7 +31,7 @@ public abstract class BasePresenter<T extends IView> implements IPresenter<T> {
     }
 
     protected void unSubscribe() {
-        if (mCompositeDisposable != null && mCompositeDisposable.size()!= 0) {
+        if (mCompositeDisposable != null && mCompositeDisposable.size() != 0) {
             /**
              * 此方法会导致CompositeSubscription类被退订，调用unsubscribe方法后，
              * 此类实例(mCompositeSubscription)仍然可以添加新的subscription进来，
@@ -60,6 +69,7 @@ public abstract class BasePresenter<T extends IView> implements IPresenter<T> {
             mCompositeDisposable.remove(disposable);
         }
     }
+
     @Override
     public void attachView(T view) {
         this.mView = view;

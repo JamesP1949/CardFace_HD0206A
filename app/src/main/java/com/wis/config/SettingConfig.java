@@ -3,7 +3,10 @@ package com.wis.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-
+@Deprecated
+/**
+ * 使用系统默认的SharedPreferences代替SettingConfig
+ */
 public class SettingConfig {
     private static SettingConfig instance = null;
     public static final String SettingFile = "settingFile";

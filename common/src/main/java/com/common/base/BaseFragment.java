@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 
 /**
@@ -18,6 +20,7 @@ import butterknife.ButterKnife;
  */
 
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements IView {
+    @Inject
     protected T mPresenter;
 
     @Nullable
@@ -32,8 +35,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mPresenter == null)
-            mPresenter = getPresenter();
+        injectDagger();
         if (mPresenter != null)
             mPresenter.attachView(this);
     }
@@ -61,7 +63,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     public abstract int getLayoutId();
 
-    protected abstract T getPresenter();
+    protected abstract void injectDagger();
 
     @Override
     public void onDestroyView() {

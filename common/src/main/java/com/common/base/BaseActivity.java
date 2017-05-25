@@ -6,6 +6,8 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 
 /**
@@ -14,6 +16,7 @@ import butterknife.ButterKnife;
 
 public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity
         implements IView {
+    @Inject
     protected T mPresenter;
 
     @Override
@@ -21,8 +24,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
         ButterKnife.bind(this);
-        if (mPresenter == null)
-            mPresenter = getPresenter();
+        // TODO
+        injectDagger();
         if (mPresenter != null)
             mPresenter.attachView(this);
     }
@@ -30,7 +33,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     // 获取布局layoutId
     public abstract int getLayoutResId();
 
-    public abstract T getPresenter();
+    protected abstract void injectDagger();
 
     @Override
     public void showToast(String msg) {

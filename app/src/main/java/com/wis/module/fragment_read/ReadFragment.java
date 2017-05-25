@@ -17,11 +17,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.common.base.BaseFragment;
-import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.config.UserConfig;
 import com.wis.utils.GlobalConstant;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,6 +54,11 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
     TextView mTvOfficial;
     @Bind(R.id.tv_valid)
     TextView mTvValid;
+    @Inject
+    UserConfig mUserConfig;
+    @Inject
+    ReadPresenter mPresenter;
+
     private MyReceiver mReceiver;
 
     @Override
@@ -89,23 +96,12 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
     }
 
     @Override
-    public void setReadStatus(boolean readStatus) {
-
-    }
-
-    @Override
-    public void openDevice() {
-
-    }
-
-    @Override
-    public void closeDevice() {
-
-    }
-
-    @Override
-    protected ReadPresenter getPresenter() {
-        return new ReadPresenter();
+    protected void injectDagger() {
+        DaggerReadComponent.builder()
+                .appComponent(AppCore.getAppComponent())
+                .readModule(new ReadModule())
+                .build()
+                .inject(this);
     }
 
 
@@ -138,18 +134,16 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
 
     // 读卡成功刷新UI
     private void updateUI() {
-        UserConfig config = App.getInstance().getUserConfig();
-        KLog.e("xingming:" + config.getName());
-        mTvName.setText(config.getName());
-        mTvSex.setText(config.getSex());
-        mTvNation.setText(config.getNation());
-        mTvBirth.setText(config.getBirthday());
-        mTvAddress.setText(config.getAddress());
-        mTvId.setText(config.getIdNum());
-        mTvOfficial.setText(config.getOffice());
-        mTvValid.setText(config.getValidDate());
-        if (!TextUtils.isEmpty(config.getImagePath())) {
-            Bitmap bitmap = BitmapFactory.decodeFile(config.getImagePath());
+        mTvName.setText(mUserConfig.getName());
+        mTvSex.setText(mUserConfig.getSex());
+        mTvNation.setText(mUserConfig.getNation());
+        mTvBirth.setText(mUserConfig.getBirthday());
+        mTvAddress.setText(mUserConfig.getAddress());
+        mTvId.setText(mUserConfig.getIdNum());
+        mTvOfficial.setText(mUserConfig.getOffice());
+        mTvValid.setText(mUserConfig.getValidDate());
+        if (!TextUtils.isEmpty(mUserConfig.getImagePath())) {
+            Bitmap bitmap = BitmapFactory.decodeFile(mUserConfig.getImagePath());
             mIvPhoto.setImageBitmap(bitmap);
         }
     }
