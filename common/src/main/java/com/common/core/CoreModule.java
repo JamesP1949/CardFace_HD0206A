@@ -1,4 +1,4 @@
-package com.common.module;
+package com.common.core;
 
 import android.app.Application;
 

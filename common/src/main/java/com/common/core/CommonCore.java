@@ -2,10 +2,6 @@ package com.common.core;
 
 import android.app.Application;
 
-import com.common.component.CoreComponent;
-import com.common.component.DaggerCoreComponent;
-import com.common.module.CoreModule;
-
 /**
  * Created by JamesP949 on 2017/5/24.
  * Function:

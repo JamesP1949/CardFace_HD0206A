@@ -3,6 +3,7 @@ package com.wis.application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.common.cache.WeakMemoryCache;
 import com.common.scope.AppScope;
 import com.wis.bean.DaoManager;
 import com.wis.config.UserConfig;
@@ -51,5 +52,11 @@ public class AppModule {
     @Provides
     public WisMobile provideWisMobile() {
         return new WisMobile();
+    }
+
+    @AppScope
+    @Provides
+    public WeakMemoryCache provideWeakMemoryCache() {
+        return new WeakMemoryCache();
     }
 }

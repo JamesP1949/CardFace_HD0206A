@@ -50,11 +50,16 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
     private boolean threadFlag;
     private Disposable mCountDisposable;
     private Subscription mSubscription;
-    private WeakMemoryCache mMemoryCache = App.getInstance().getWeakMemoryCache();
+    @Inject
+    WeakMemoryCache mMemoryCache;
+    @Inject
+    UserConfig mUserConfig;
     @Inject
     DaoManager mDaoManager;
     @Inject
     WisMobile mWisMobile;
+    @Inject
+    App mApp;
 
     @Override
     protected void injectDagger() {
@@ -127,8 +132,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                     public Compare apply(@NonNull Compare compare) throws Exception {
                         if (threadFlag) { // 读取到证件时 才进行比对工作 否则原样返回
                             // 获取证件照的人脸特征值
-                            float[] cardFaceFeature = App.getInstance().getUserConfig()
-                                    .getFaceFeature();
+                            float[] cardFaceFeature = mUserConfig.getFaceFeature();
                             float[] compareFea = StringUtils.split2FloatArr(compare
                                     .getFaceFeature());
                             float score = FeatureUtils.compare2IdCard(mWisMobile, compareFea,
@@ -264,19 +268,19 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
 
     @Override
     public void saveInDB(final Compare compare) {
-        UserConfig config = App.getInstance().getUserConfig();
         final Person person = new Person();
-        person.setName(config.getName());
-        person.setSex(config.getSex());
-        person.setNation(config.getNation());
-        person.setCardId(config.getIdNum());
-        person.setAddress(config.getAddress());
-        person.setIdCardPhotoPath(config.getImagePath());
+        person.setName(mUserConfig.getName());
+        person.setSex(mUserConfig.getSex());
+        person.setNation(mUserConfig.getNation());
+        person.setCardId(mUserConfig.getIdNum());
+        person.setAddress(mUserConfig.getAddress());
+        person.setIdCardPhotoPath(mUserConfig.getImagePath());
         person.setDetectTime(compare.getCompareTime());
         Disposable disposable = Schedulers.io().scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                person.setDetectPhotoPath(FileUtils.saveBitmap2File(App.getInstance(),
+                person.setDetectPhotoPath(FileUtils.saveBitmap2File(
+                        mApp,
                         String.valueOf(compare.getCompareTime()),
                         compare.getCropBitmap()));
                 long insert = mDaoManager.insertPerson(person);

@@ -8,7 +8,10 @@ import android.support.annotation.Nullable;
 
 import com.wis.R;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.utils.GlobalConstant;
+
+import javax.inject.Inject;
 
 /**
  * Created by JamesP949 on 2017/5/10.
@@ -21,10 +24,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference
     ListPreference mReadPreference;
     ListPreference mTimePreference; // 比对时长
     ListPreference mThresholdPreference; // 比对阈值
+    @Inject
+    App mApp;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCore.getAppComponent().inject(this);
         addPreferencesFromResource(R.xml.preference_settings);
         readKey = getString(R.string.pref_key_read);
         timeKey = getString(R.string.pref_key_comparison_time);
@@ -43,7 +49,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference.getKey().endsWith(readKey)) {
-            App.getInstance().setTimeIntervalChanged();
+            mApp.setTimeIntervalChanged();
             return true;
         } else if (preference.getKey().endsWith(timeKey)) {
             GlobalConstant.countdownFlag = true;

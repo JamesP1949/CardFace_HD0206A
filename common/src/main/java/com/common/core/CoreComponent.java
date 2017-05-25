@@ -1,8 +1,7 @@
-package com.common.component;
+package com.common.core;
 
 import android.app.Application;
 
-import com.common.module.CoreModule;
 import com.common.scope.CoreScope;
 
 import dagger.Component;

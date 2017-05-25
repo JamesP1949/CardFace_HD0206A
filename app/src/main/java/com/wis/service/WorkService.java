@@ -50,6 +50,8 @@ public class WorkService extends Service {
     SharedPreferences mDefaultSharedPreferences;
     @Inject
     WisMobile mWisMobile;
+    @Inject
+    UserConfig mUserConfig;
 
     @Nullable
     @Override
@@ -148,30 +150,28 @@ public class WorkService extends Service {
     private void transform2Person(final Result result) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd", Locale.CHINA);
         IDCard card = (IDCard) result.data;
-        UserConfig config = App.getInstance().getUserConfig();
         String validate = df.format(card.getValidFrom()) + " - " + (card.getValidTo() == null ?
                 getString(R.string.long_term) : df.format(card.getValidTo()));
         // 身份证号且有效期一样才能证明是同一个人且身份证没有重新办理过
-        if (!config.getIdNum().equals(card.getNumber())
-                || !config.getValidDate().equals(validate)) {
-            config.setName(card.getName());
-            config.setSex(card.getSex().toString());
-            config.setNation(card.getNationality().toString());
-            config.setBirthday(df.format(card.getBirthday()));
-            config.setAddress(card.getAddress());
-            config.setIdNum(card.getNumber());
-            config.setOffice(card.getAuthority());
-            config.setValidDate(validate);
+        if (!mUserConfig.getIdNum().equals(card.getNumber())
+                || !mUserConfig.getValidDate().equals(validate)) {
+            mUserConfig.setName(card.getName());
+            mUserConfig.setSex(card.getSex().toString());
+            mUserConfig.setNation(card.getNationality().toString());
+            mUserConfig.setBirthday(df.format(card.getBirthday()));
+            mUserConfig.setAddress(card.getAddress());
+            mUserConfig.setIdNum(card.getNumber());
+            mUserConfig.setOffice(card.getAuthority());
+            mUserConfig.setValidDate(validate);
             if (card.getPhoto() != null) {
                 String bitmap2File = FileUtils.saveBitmap2File(WorkService.this,
                         card.getName(), card.getPhoto());
-                config.setImagePath(bitmap2File);
+                mUserConfig.setImagePath(bitmap2File);
                 float[] detectFace = mWisMobile.detectFace(card.getPhoto());
-                config.setFaceFeature(detectFace);
+                mUserConfig.setFaceFeature(detectFace);
                 KLog.e("CardInfo：" + bitmap2File);
             }
         }
-
 
         Intent intent = new Intent(GlobalConstant.Action_READ_SUC);
         LocalBroadcastManager.getInstance(WorkService.this).sendBroadcast(intent);

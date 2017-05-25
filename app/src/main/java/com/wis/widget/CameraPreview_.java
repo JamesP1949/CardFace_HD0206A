@@ -18,7 +18,7 @@ import android.view.SurfaceView;
 
 import com.common.cache.WeakMemoryCache;
 import com.socks.library.KLog;
-import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.utils.GlobalConstant;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.lang.ref.Reference;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * Created by ybbz on 16/7/28.
@@ -48,7 +50,8 @@ public class CameraPreview_ extends SurfaceView {
     private float aspectRatio; // 相机预览界面宽高比
     private int mWidth, mHeight;
     private Map.Entry<String, Reference<Bitmap>> mEntry;
-    private WeakMemoryCache mMemoryCache;
+    @Inject
+    WeakMemoryCache mMemoryCache;
 
     @SuppressWarnings("deprecation")
     public CameraPreview_(Context context) {
@@ -62,12 +65,12 @@ public class CameraPreview_ extends SurfaceView {
     }
 
     private void init(Context context) {
+        AppCore.getAppComponent().inject(this);
         mContext = context;
         mHolder = getHolder();
         mHolder.addCallback(new CustomCallBack());
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mNumberOfCameras = Camera.getNumberOfCameras();
-        mMemoryCache = App.getInstance().getWeakMemoryCache();
     }
 
     private class CustomCallBack implements SurfaceHolder.Callback {

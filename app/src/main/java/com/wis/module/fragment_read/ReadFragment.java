@@ -58,7 +58,8 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
     UserConfig mUserConfig;
     @Inject
     ReadPresenter mPresenter;
-
+    @Inject
+    App mApp;
     private MyReceiver mReceiver;
 
     @Override
@@ -79,7 +80,7 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
     @Override
     public void reRead() {
         clearUI();
-        App.getInstance().setReStartReader();
+        mApp.setReStartReader();
     }
 
     @Override

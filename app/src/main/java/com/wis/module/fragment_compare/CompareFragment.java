@@ -27,6 +27,7 @@ import com.wis.R;
 import com.wis.application.App;
 import com.wis.application.AppCore;
 import com.wis.bean.Compare;
+import com.wis.config.UserConfig;
 import com.wis.utils.GlobalConstant;
 import com.wis.widget.CameraPreview_;
 
@@ -77,6 +78,11 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     ComparePresenter_ mPresenter;
     @Inject
     SharedPreferences defaultPreferences;
+    @Inject
+    UserConfig mUserConfig;
+    @Inject
+    App mApp;
+
     @Override
     public int getLayoutId() {
         return R.layout.fragment_compare;
@@ -100,7 +106,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        KLog.e("onCreateView---");
         // TODO: inflate a fragment view
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
         ButterKnife.bind(this, rootView);
@@ -110,7 +115,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        KLog.e("onViewCreated---");
         mCameraPreview = new CameraPreview_(getActivity(), null);
         mDrawImageView_ = new DrawImageView_(getActivity(), null);
         mPreFrame.addView(mCameraPreview);
@@ -140,7 +144,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Override
     public void onPause() {
         super.onPause();
-//        doWriteFile_led(false);
         mPresenter.stopCompare();
     }
 
@@ -186,17 +189,8 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
 
     @Override
     public void start() {
-//        doWriteFile_led(true);
         mPresenter.compare(c_threshold);
     }
-
-   /* @Override
-    public void reStart() {
-        mTvResult.setText("");
-        mReCompare.setVisibility(View.GONE);
-        mCountdownRl.setVisibility(View.INVISIBLE);
-        start();
-    }*/
 
     @Override
     public void updateCD(int arg1) {
@@ -207,8 +201,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     public void updateUI(boolean isSucceed, final Compare compare) {
 //        doWriteFile_led(false);
         KLog.e("比对结果：" + isSucceed);
-        mIvCard.setImageBitmap(ImageUtils.readBitmapFromFile(App.getInstance().getUserConfig()
-                .getImagePath(), 120, 160));
+        mIvCard.setImageBitmap(ImageUtils.readBitmapFromFile(mUserConfig.getImagePath(), 120, 160));
         mIvDetect.setImageBitmap(compare.getCropBitmap());
         if (isSucceed) {
             mTvResult.setText("成功");
@@ -229,7 +222,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
                         clearUI();
                         compare.clear();
                         mPresenter.compare(c_threshold);
-                        App.getInstance().setReStartReader();
+                        mApp.setReStartReader();
                     }
                 });
     }

@@ -44,10 +44,7 @@ public class CopyFileToSD {
         if (!file.exists()) {
             file.mkdir();
         }
-
-//        initCopyReaderFiles(context);
         initCopyModelFiles(context.getApplicationContext());
-//        App.getInstance().loadWisMobile();
         KLog.e("loadModule---S" + System.currentTimeMillis());
         mWisMobile.setNumThreads(2);
         mWisMobile.loadModel(AppConfig.ModelPath);
