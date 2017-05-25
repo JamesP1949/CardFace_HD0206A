@@ -1,11 +1,12 @@
-package com.wis.utils;
+package com.wis.sdcard;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.socks.library.KLog;
-import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.config.AppConfig;
+import com.wis.face.WisMobile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.inject.Inject;
 
 /**
  * Created by JamesP949 on 2017/3/14.
@@ -22,6 +25,12 @@ public class CopyFileToSD {
     private static final int ASSETS_SUFFIX_BEGIN = 0;
     private static final int ASSETS_SUFFIX_END = 9;
     private static boolean flag;  // 拷贝模型成功标志
+    @Inject
+    WisMobile mWisMobile;
+
+    public CopyFileToSD() {
+        AppCore.getAppComponent().inject(this);
+    }
 
     /**
      * 初始化设备数据库
@@ -29,7 +38,7 @@ public class CopyFileToSD {
      * @param context
      * @return
      */
-    public static boolean initDB(Context context) {
+    public boolean initDB(Context context) {
         File file = new File(AppConfig.ModelPath);//临时文件夹
 
         if (!file.exists()) {
@@ -38,8 +47,13 @@ public class CopyFileToSD {
 
 //        initCopyReaderFiles(context);
         initCopyModelFiles(context.getApplicationContext());
+//        App.getInstance().loadWisMobile();
         KLog.e("loadModule---S" + System.currentTimeMillis());
-        App.getInstance().loadWisMobile();
+        mWisMobile.setNumThreads(2);
+        mWisMobile.loadModel(AppConfig.ModelPath);
+        // 机器码 每个机器一个
+        String SerialNo = mWisMobile.getSerialNo();
+        KLog.e("SerialNo:" + SerialNo);
         KLog.e("loadModule---E" + System.currentTimeMillis());
         return flag;
     }
@@ -68,7 +82,7 @@ public class CopyFileToSD {
      *
      * @param context
      */
-    private static void initCopyModelFiles(Context context) {
+    private void initCopyModelFiles(Context context) {
         KLog.i("start copy files----------> ");
         copyBigDataBase(context);
         copyBigDataToSD(context, AppConfig.F_DETECTOR_DAT_N);
@@ -96,7 +110,7 @@ public class CopyFileToSD {
      * @param path
      * @return
      */
-    private static void Init(Context context, @NonNull int rawId, String path) {
+    private void Init(Context context, @NonNull int rawId, String path) {
         InputStream input = null;
         OutputStream output = null;
         // 输出路径
@@ -133,7 +147,7 @@ public class CopyFileToSD {
     }
 
 
-    private static void copyBigDataBase(Context context) {
+    private void copyBigDataBase(Context context) {
         InputStream myInput = null;
         OutputStream myOutput = null;
         KLog.i("start copy file " + AppConfig.F_MODEL_SMALL);
@@ -172,7 +186,7 @@ public class CopyFileToSD {
         }
     }
 
-    private static void copyBigDataToSD(Context context, String strOutFileName) {
+    private void copyBigDataToSD(Context context, String strOutFileName) {
         KLog.i("start copy file " + strOutFileName);
         String tmpFile = AppConfig.ModelPath + File.separator + strOutFileName;
         File f = new File(tmpFile);

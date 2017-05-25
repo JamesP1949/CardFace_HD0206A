@@ -8,17 +8,19 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.common.base.BasePresenter;
 import com.common.base.BaseToolBarActivity;
 import com.common.rx.SchedulersCompat;
 import com.common.utils.DisplayUtils;
 import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.App;
+import com.wis.application.AppCore;
 import com.wis.module.query.QueryActivity;
 import com.wis.module.settings.SettingsActivity;
-import com.wis.utils.CopyFileToSD;
+import com.wis.sdcard.CopyFileToSD;
 import com.wis.utils.GlobalConstant;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import io.reactivex.Observable;
@@ -34,6 +36,10 @@ public class MainActivity extends BaseToolBarActivity {
     TextView mTvTips;
     @Bind(R.id.progress_rl)
     RelativeLayout mProgressRl;
+
+    @Inject
+    App mApp;
+
     CompositeDisposable mCompositeDisposable;
 
     @Override
@@ -68,7 +74,7 @@ public class MainActivity extends BaseToolBarActivity {
                             intent.putExtra(GlobalConstant.Action_Init_MSg, true);
                             LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast
                                     (intent);
-                            App.getInstance().bindService();
+                            mApp.bindService();
                         } else {
                             showToast("比对模型初始化失败");
                             finish();
@@ -85,12 +91,8 @@ public class MainActivity extends BaseToolBarActivity {
     }
 
     @Override
-    public void hideStatusBar() {
-    }
-
-    @Override
-    public BasePresenter getPresenter() {
-        return null;
+    protected void injectDagger() {
+        AppCore.getAppComponent().inject(this);
     }
 
     @Override
@@ -110,14 +112,14 @@ public class MainActivity extends BaseToolBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        App.getInstance().setPauseReader();
+        mApp.setPauseReader();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (App.getInstance().isReaderPaused()) {
-            App.getInstance().setReStartReader();
+        if (mApp.isReaderPaused()) {
+            mApp.setReStartReader();
         }
     }
 
@@ -126,6 +128,6 @@ public class MainActivity extends BaseToolBarActivity {
         super.onDestroy();
         if (mCompositeDisposable.size() > 0 && !mCompositeDisposable.isDisposed())
             mCompositeDisposable.dispose();
-        App.getInstance().unBindService();
+        mApp.unBindService();
     }
 }
