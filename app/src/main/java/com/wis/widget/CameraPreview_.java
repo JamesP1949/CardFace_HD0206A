@@ -17,6 +17,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.common.cache.WeakMemoryCache;
+import com.common.utils.ImageUtils;
 import com.socks.library.KLog;
 import com.wis.application.AppCore;
 import com.wis.utils.GlobalConstant;
@@ -343,8 +344,14 @@ public class CameraPreview_ extends SurfaceView {
             YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);
             if (image != null) {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                image.compressToJpeg(new Rect(0, 0, size.width, size.height), 60, stream);
-//                KLog.e("Stream---" + stream.toByteArray().length);
+                /**
+                 * 有两种方案不会对人脸识别造成太大影响：
+                 * 一、YuvImage无损转换为Jpeg图片 解码方式采用RGB565
+                 * 二、YuvImage有损转换为Jpeg图片 解码方式采用ARGB8888
+                 * 考虑内存压力采用第一种情况
+                 */
+                image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, stream);
+                KLog.e("Stream---" + stream.toByteArray().length);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size(),
@@ -385,12 +392,9 @@ public class CameraPreview_ extends SurfaceView {
                 bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix,
                         true);
                 String key = String.valueOf(System.currentTimeMillis());
+                KLog.e("size---" + ImageUtils.getBitmapSize(bmp));
                 mMemoryCache.put(key, bmp);
-
-//                mBitmap = mMemoryCache.get(key);
                 mEntry = mMemoryCache.getEntry(key);
-//                KLog.e("View size---width" + getWidth() + ", height:" + getHeight());
-//                KLog.e("bitmap width:" + bmp.getWidth() + ", height:" + bmp.getHeight());
             }
         } catch (Exception ex) {
             KLog.e("Sys", "Error:" + ex.getMessage());

@@ -24,7 +24,6 @@ public interface CompareContract {
         void updateCD(int arg1);  // 刷新计时数据
         void updateUI(boolean isSucceed, Compare cropBitmap);
         void clearUI();
-        Map.Entry<String, Bitmap> takePicture();
         Map.Entry<String, Reference<Bitmap>> takePicture_();
         // 转换人脸在图片中的坐标
         void convertCoordinate(int ret_x, int ret_y, int ret_width, int ret_height, int

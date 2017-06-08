@@ -9,8 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.common.base.BaseToolBarActivity;
-import com.common.utils.DisplayUtils;
-import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.AppCore;
 import com.wis.module.query.QueryActivity;
@@ -41,7 +39,7 @@ public class MainActivity extends BaseToolBarActivity<MainPresenter> implements 
         setToolbarIndicator(false);
         setToolbarTitle(R.string.app_name);
         menuId = R.menu.menu_main;
-        KLog.e(DisplayUtils.getScreenRatio(this));
+//        KLog.e(DisplayUtils.getScreenRatio(this));
         mPresenter.init();
     }
 

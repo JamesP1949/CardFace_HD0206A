@@ -111,7 +111,7 @@ public class ImageUtils {
      * @param bitmap
      * @return
      */
-    private static long getBitmapSize(Bitmap bitmap) {
+    public static long getBitmapSize(Bitmap bitmap) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {    //API 19
             return bitmap.getAllocationByteCount();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {//API 12

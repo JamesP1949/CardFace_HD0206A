@@ -152,7 +152,10 @@ public class WorkService extends Service {
         IDCard card = (IDCard) result.data;
         String validate = df.format(card.getValidFrom()) + " - " + (card.getValidTo() == null ?
                 getString(R.string.long_term) : df.format(card.getValidTo()));
-        // 身份证号且有效期一样才能证明是同一个人且身份证没有重新办理过
+        /**
+         * 身份证号且有效期一样才能证明是同一个人且身份证没有重新办理过
+         * 只要有一个不一样就覆盖UserConfig中的信息
+         */
         if (!mUserConfig.getIdNum().equals(card.getNumber())
                 || !mUserConfig.getValidDate().equals(validate)) {
             mUserConfig.setName(card.getName());

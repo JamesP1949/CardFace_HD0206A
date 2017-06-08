@@ -32,7 +32,7 @@
         android:layout_height="225dp"
         android:layout_gravity="center_horizontal">
 
-        <com.wis.widget.CameraPreview
+        <com.wis.widget.CameraPreview_
             android:id="@+id/preView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

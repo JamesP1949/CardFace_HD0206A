@@ -146,6 +146,13 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                         return compare;
                     }
                 })
+                .doOnNext(new Consumer<Compare>() {
+                    @Override
+                    public void accept(@NonNull Compare compare) throws Exception {
+                        if (compare.getCompareScore() >= threshold)
+                            saveInDB(compare);
+                    }
+                })
                 .compose(SchedulersCompat.<Compare>applyFlowable_IoSchedulers())
                 .subscribe(new Subscriber<Compare>() {
 
@@ -163,9 +170,8 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                             mSubscription.cancel(); // 停止发射数据
                             if (compare.getCompareScore() >= threshold) {
                                 mView.updateUI(true, compare);
-                                saveInDB(compare);
                             } else {
-                                saveInDB(compare);
+//                                saveInDB(compare);
                                 mView.updateUI(false, compare);
                             }
                         }
@@ -207,12 +213,16 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
             crop_height = result[3] + 2 * translateY;
             boolean x = crop_left >= 0 && crop_width <= bitmap.getWidth();
             boolean y = crop_top >= 0 && crop_height <= bitmap.getHeight();
-            if (x && y) {
-                break;
-            } else if (x && !y) {
-                translateY -= 2;
-            } else if (!x && y) {
+
+            if (!x && !y) { // x、y都不符合判断条件
                 translateX -= 2;
+                translateY -= 2;
+            } else if (x && !y) { // x符合 y不符合
+                translateY -= 2;
+            } else if (!x && y) { // x不符合 y符合
+                translateX -= 2;
+            } else { // x y 都符合 跳出循环
+                break;
             }
         }
 
@@ -229,9 +239,6 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
     @Override
     public void startCountDown(int countInterval) {
         KLog.e("启动计时器");
-        /*threadFlag = true;
-        TimeThread timeThread = new TimeThread();
-        timeThread.start();*/
         if (mCountDisposable != null)
             removeSubscribe(mCountDisposable);
         mCountDisposable = RxCountdown.countdown(countInterval)
@@ -268,17 +275,18 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
 
     @Override
     public void saveInDB(final Compare compare) {
-        final Person person = new Person();
-        person.setName(mUserConfig.getName());
-        person.setSex(mUserConfig.getSex());
-        person.setNation(mUserConfig.getNation());
-        person.setCardId(mUserConfig.getIdNum());
-        person.setAddress(mUserConfig.getAddress());
-        person.setIdCardPhotoPath(mUserConfig.getImagePath());
-        person.setDetectTime(compare.getCompareTime());
         Disposable disposable = Schedulers.io().scheduleDirect(new Runnable() {
             @Override
             public void run() {
+                KLog.e("save---aLong:" + compare.getaLong());
+                final Person person = new Person();
+                person.setName(mUserConfig.getName());
+                person.setSex(mUserConfig.getSex());
+                person.setNation(mUserConfig.getNation());
+                person.setCardId(mUserConfig.getIdNum());
+                person.setAddress(mUserConfig.getAddress());
+                person.setIdCardPhotoPath(mUserConfig.getImagePath());
+                person.setDetectTime(compare.getCompareTime());
                 person.setDetectPhotoPath(FileUtils.saveBitmap2File(
                         mApp,
                         String.valueOf(compare.getCompareTime()),

@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -44,6 +48,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -52,7 +57,7 @@ import io.reactivex.functions.Consumer;
  */
 
 public class CompareFragment extends BaseFragment<ComparePresenter_> implements
-        CompareContract.View {
+        CompareContract.View, SensorEventListener {
     @Bind(R.id.preFrame)
     FrameLayout mPreFrame;
     @Bind(R.id.iv_card)
@@ -77,11 +82,16 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Inject
     ComparePresenter_ mPresenter;
     @Inject
+    SensorManager mSensorManager;
+    @Inject
+    Sensor mSensor;
+    @Inject
     SharedPreferences defaultPreferences;
     @Inject
     UserConfig mUserConfig;
     @Inject
     App mApp;
+    private Disposable mDisposable;
 
     @Override
     public int getLayoutId() {
@@ -139,11 +149,17 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
             getC_threshold();
             GlobalConstant.thresholdFlag = false;
         }
+
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (!mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mSensorManager.unregisterListener(this, mSensor);
         mPresenter.stopCompare();
     }
 
@@ -205,6 +221,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
         mIvDetect.setImageBitmap(compare.getCropBitmap());
         if (isSucceed) {
             mTvResult.setText("成功");
+            mTvResult.setTextColor(ContextCompat.getColor(getActivity(), R.color.teal_400));
             mCountdownRl.setVisibility(View.INVISIBLE);
         } else {
             mTvResult.setText("失败");
@@ -213,13 +230,13 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
             mReCompare.setVisibility(View.INVISIBLE);
         }
 
-        Observable.timer(3000, TimeUnit.MILLISECONDS)
+        mDisposable = Observable.timer(1500, TimeUnit.MILLISECONDS)
                 .compose(SchedulersCompat.<Long>applyObservable_IoSchedulers())
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(@NonNull Long aLong) throws Exception {
-                        KLog.e("执行倒计时------");
                         clearUI();
+                        KLog.e("执行倒计时------");
                         compare.clear();
                         mPresenter.compare(c_threshold);
                         mApp.setReStartReader();
@@ -236,13 +253,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
         mIvDetect.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.avart));
         mIvCard.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.avart));
 
-    }
-
-    @Override
-    public Map.Entry<String, Bitmap> takePicture() {
-        /*if (mCameraPreview == null) return null;
-        return mCameraPreview.take();*/
-        return null;
     }
 
     @Override
@@ -295,6 +305,20 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(event.sensor.getType() == Sensor.TYPE_LIGHT){
+//            event.sensor.getVersion()
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        if (sensor.getType() == Sensor.TYPE_LIGHT) {
+            KLog.e("accuracy--" + accuracy);
+        }
     }
 
   /*  @OnClick(R.id.re_compare)

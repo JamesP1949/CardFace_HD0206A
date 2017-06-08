@@ -21,7 +21,8 @@
                 android:name="com.wis.module.fragment_read.ReadFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4" />
+                android:layout_weight="4"
+                 />
 
             <View
                 android:id="@+id/textView"
@@ -35,7 +36,8 @@
                 android:name="com.wis.module.fragment_compare.CompareFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="6" />
+                android:layout_weight="6"
+                 />
         </LinearLayout>
 
         <RelativeLayout

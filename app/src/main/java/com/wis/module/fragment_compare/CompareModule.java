@@ -1,5 +1,9 @@
 package com.wis.module.fragment_compare;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+
 import com.common.scope.FragmentScope;
 
 import dagger.Module;
@@ -23,4 +27,15 @@ public class CompareModule {
         return new ComparePresenter_();
     }
 
+    @FragmentScope
+    @Provides
+    public SensorManager provideSensorManager() {
+        return (SensorManager) mFragment.getActivity().getSystemService(Context.SENSOR_SERVICE);
+    }
+
+    @FragmentScope
+    @Provides
+    public Sensor provideSensor() {
+        return provideSensorManager().getDefaultSensor(Sensor.TYPE_LIGHT);
+    }
 }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
-import com.socks.library.KLog;
-
 /**
  * Created by JamesP949 on 2017/2/27.
  * Function:获取手机屏幕相关
@@ -18,7 +16,7 @@ public class DisplayUtils {
 
     public static float getScreenRatio(Context context) {
         DisplayMetrics metrics = getMetrics(context);
-        KLog.e("屏幕分辨率：width：" + metrics.widthPixels + " * 高度：" + metrics.heightPixels + ", density:" + metrics.densityDpi);
+//        KLog.e("屏幕分辨率：width：" + metrics.widthPixels + " * 高度：" + metrics.heightPixels + ", density:" + metrics.densityDpi);
         return metrics.widthPixels/metrics.heightPixels;
     }
 
