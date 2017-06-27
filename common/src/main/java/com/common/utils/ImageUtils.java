@@ -83,26 +83,61 @@ public class ImageUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
-        float outW = options.outWidth;
-        float outH = options.outHeight;
-
-        int scaledSize = (int) Math.min(outW / requiredWidth, outH / requiredHeight);
-        if (scaledSize < 1)
-            scaledSize = 1;
-        options.inSampleSize = scaledSize;
+        options.inSampleSize = calculateInSampleSize(options, requiredWidth, requiredHeight);
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-        if (bitmap == null) return null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        int quality = 100;
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
-       /* while (getBitmapSize(bitmap) > 30 * 1024) { // 30Kb界限
-            bos.reset();
-            quality -= 10;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
-        }*/
-        return bitmap;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    /**
+     * 计算压缩比例
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        // BEGIN_INCLUDE (calculate_sample_size)
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+
+            /**
+             * This offers some additional logic in case the image has a strange
+             * aspect ratio. For example, a panorama may have a much larger
+             * width than height. In these cases the total pixels might still
+             * end up being too large to fit comfortably in memory, so we should
+             * be more aggressive with sample down the image (=larger inSampleSize).
+             * 这里额外的逻辑对全景图而言 一般Bitmap基本不会用到
+             * */
+
+            long totalPixels = width * height / inSampleSize;
+
+            // Anything more than 2x the requested pixels we'll sample down further
+            final long totalReqPixelsCap = reqWidth * reqHeight * 2;
+
+            while (totalPixels > totalReqPixelsCap) {
+                inSampleSize *= 2;
+                totalPixels /= 2;
+            }
+        }
+        return inSampleSize;
+        // END_INCLUDE (calculate_sample_size)
     }
 
     /**

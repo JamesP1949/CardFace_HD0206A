@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.common.base.BaseFragment;
+import com.common.cache.ImageReSize;
 import com.common.rx.SchedulersCompat;
 import com.common.utils.ImageUtils;
 import com.common.widget.DrawImageView_;
@@ -91,7 +92,10 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     UserConfig mUserConfig;
     @Inject
     App mApp;
+    @Inject
+    ImageReSize mImageReSize;
     private Disposable mDisposable;
+
 
     @Override
     public int getLayoutId() {
@@ -126,6 +130,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCameraPreview = new CameraPreview_(getActivity(), null);
+        mCameraPreview.setImageReSize(mImageReSize);
         mDrawImageView_ = new DrawImageView_(getActivity(), null);
         mPreFrame.addView(mCameraPreview);
         mPreFrame.addView(mDrawImageView_);
@@ -138,6 +143,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
         super.onResume();
         if (mCameraPreview == null) {
             mCameraPreview = new CameraPreview_(getActivity(), null);
+            mCameraPreview.setImageReSize(mImageReSize);
             mPreFrame.addView(mCameraPreview, 0);
         }
         if (GlobalConstant.countdownFlag) {

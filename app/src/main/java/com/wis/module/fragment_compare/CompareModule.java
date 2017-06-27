@@ -3,7 +3,10 @@ package com.wis.module.fragment_compare;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.support.v4.app.FragmentManager;
 
+import com.common.cache.ImageCache;
+import com.common.cache.ImageReSize;
 import com.common.scope.FragmentScope;
 
 import dagger.Module;
@@ -37,5 +40,15 @@ public class CompareModule {
     @Provides
     public Sensor provideSensor() {
         return provideSensorManager().getDefaultSensor(Sensor.TYPE_LIGHT);
+    }
+
+    @FragmentScope
+    @Provides
+    public ImageReSize provideImageReSize() {
+        FragmentManager fragmentManager = mFragment.getActivity().getSupportFragmentManager();
+        ImageCache.ImageCacheParams imageCacheParams = new ImageCache.ImageCacheParams();
+        ImageReSize reSize = new ImageReSize(mFragment.getActivity());
+        reSize.addImageCache(fragmentManager, imageCacheParams);
+        return reSize;
     }
 }

@@ -2,6 +2,7 @@ package com.common.cache;
 
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.v4.util.LruCache;
 
 import com.socks.library.KLog;
 
