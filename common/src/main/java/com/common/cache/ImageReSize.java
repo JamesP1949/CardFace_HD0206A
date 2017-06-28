@@ -17,11 +17,16 @@ import static com.common.utils.ImageUtils.calculateInSampleSize;
  */
 
 public class ImageReSize {
-    ImageCache mImageCache;
-    ImageCache.ImageCacheParams mImageCacheParams;
-    public Bitmap mBitmap;
+    private ImageCache mImageCache;
+    private ImageCache.ImageCacheParams mImageCacheParams;
+    private Bitmap mBitmap;
+
 
     public ImageReSize(Context context) {
+    }
+
+    public ImageCache getImageCache() {
+        return mImageCache;
     }
 
     public void addImageCache(FragmentManager fragmentManager,

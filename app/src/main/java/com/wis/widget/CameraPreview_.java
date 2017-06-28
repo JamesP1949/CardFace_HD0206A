@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -17,10 +16,10 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.common.cache.ImageCache;
 import com.common.cache.ImageReSize;
 import com.common.cache.RecyclingBitmapDrawable;
 import com.common.cache.WeakMemoryCache;
-import com.common.utils.ImageUtils;
 import com.common.utils.VersionUtils;
 import com.socks.library.KLog;
 import com.wis.application.AppCore;
@@ -28,9 +27,7 @@ import com.wis.utils.GlobalConstant;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.ref.Reference;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -51,10 +48,10 @@ public class CameraPreview_ extends SurfaceView {
     public static int mNumberOfCameras;
     private boolean isOpenCamera;
     public static boolean isCameraPreViewStarted; // 是否开始预览了
-    private Bitmap mBitmap;
+    private BitmapDrawable mBitmapDrawable;
     private float aspectRatio; // 相机预览界面宽高比
     private int mWidth, mHeight;
-    private Map.Entry<String, Reference<Bitmap>> mEntry;
+    private ImageCache mImageCache;
     @Inject
     WeakMemoryCache mMemoryCache;
 
@@ -64,6 +61,7 @@ public class CameraPreview_ extends SurfaceView {
 
     public void setImageReSize(ImageReSize imageReSize) {
         mImageReSize = imageReSize;
+        mImageCache = mImageReSize.getImageCache();
     }
 
     private ImageReSize mImageReSize;
@@ -332,7 +330,7 @@ public class CameraPreview_ extends SurfaceView {
         return mCamera;
     }
 
-    public Map.Entry<String, Reference<Bitmap>> take() {
+    public BitmapDrawable take() {
         if (mCamera == null) return null;
         mCamera.setOneShotPreviewCallback(new Camera.PreviewCallback() {
             @Override
@@ -341,7 +339,7 @@ public class CameraPreview_ extends SurfaceView {
             }
         });
 
-        return mEntry;
+        return mBitmapDrawable;
     }
 
     private void decodeToBitMap(byte[] data, Camera _camera) {
@@ -365,87 +363,7 @@ public class CameraPreview_ extends SurfaceView {
                  * 考虑内存压力采用第一种情况
                  */
                 image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, stream);
-                KLog.e("Stream---" + stream.toByteArray().length);
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size(),
-                        options);
-                options.inSampleSize = ImageUtils.calculateInSampleSize(options, getWidth(),
-                        getHeight());
-                options.inPreferredConfig = Bitmap.Config.RGB_565; // 解码方式选择最节省内存的565
-                options.inJustDecodeBounds = false;
-                bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size(),
-                        options);
-                stream.close();
-                if (bmp == null)
-                    KLog.e("没有形成图片");
-
-                Matrix matrix = new Matrix();
-                switch (cameraInfo.facing) {
-                    case Camera.CameraInfo.CAMERA_FACING_FRONT://前
-                        if (cameraInfo.orientation == 90) {
-                            matrix.preRotate(DIGREE_270);  // 特殊设备本身是横屏 不需要旋转
-                        }
-                        /**
-                         * 水平镜像反转 不然呈现的画面是左右反转的
-                         */
-                        matrix.postScale(-1, 1);
-                        break;
-                    case Camera.CameraInfo.CAMERA_FACING_BACK://后
-                        matrix.preRotate(DIGREE_90);
-                        break;
-                }
-
-                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix,
-                        true);
-                String key = String.valueOf(System.currentTimeMillis());
-                KLog.e("size---" + ImageUtils.getBitmapSize(bmp));
-                mMemoryCache.put(key, bmp);
-                mEntry = mMemoryCache.getEntry(key);
-            }
-        } catch (Exception ex) {
-            KLog.e("Sys", "Error:" + ex.getMessage());
-            mEntry = null;
-        }
-    }
-
-    /**
-     * 释放相机资源
-     */
-    public void freeCameraResource() {
-        if (mCamera != null) {
-            KLog.e("释放相机资源");
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
-            isOpenCamera = false;
-            isCameraPreViewStarted = false;
-        }
-    }
-
-    private void _decodeToBitMap(byte[] data, Camera _camera) {
-        Camera.Size size = mCamera.getParameters().getPreviewSize();
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        /**
-         * 至关重要 对前后置切换拍照功能
-         * 载入当前摄像头的信息 否则在switch(cameraInfo.facing)方法中
-         * facing永远为后置情形 不会进入前置判断
-         */
-        Camera.getCameraInfo(cameraId, cameraInfo);
-        Bitmap bmp = null;
-        try {
-            YuvImage image = new YuvImage(data, ImageFormat.NV21, size.width, size.height, null);
-            if (image != null) {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                /**
-                 * 有两种方案不会对人脸识别造成太大影响：
-                 * 一、YuvImage无损转换为Jpeg图片 解码方式采用RGB565
-                 * 二、YuvImage有损转换为Jpeg图片 解码方式采用ARGB8888
-                 * 考虑内存压力采用第一种情况
-                 */
-                image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, stream);
-                KLog.e("Stream---" + stream.toByteArray().length);
+//                KLog.e("Stream---" + stream.toByteArray().length);
                 bmp = mImageReSize.processBitmap(stream.toByteArray(), getWidth(),
                         getHeight());
                 stream.close();
@@ -470,20 +388,34 @@ public class CameraPreview_ extends SurfaceView {
 
                 bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix,
                         true);
-                BitmapDrawable drawable;
                 if (VersionUtils.hasHoneycomb()) {
-                    drawable = new RecyclingBitmapDrawable(mContext.getResources(), bmp);
+                    mBitmapDrawable = new RecyclingBitmapDrawable(mContext.getResources(), bmp);
+                    String key = String.valueOf(System.currentTimeMillis());
+                    mImageCache.addBitmapToCache(key, mBitmapDrawable);
                 } else {
-                    drawable = new BitmapDrawable(mContext.getResources(), bmp);
+                    mBitmapDrawable = new BitmapDrawable(mContext.getResources(), bmp);
                 }
-                String key = String.valueOf(System.currentTimeMillis());
-                KLog.e("size---" + ImageUtils.getBitmapSize(bmp));
-                mMemoryCache.put(key, bmp);
-                mEntry = mMemoryCache.getEntry(key);
+//                KLog.e("size---" + ImageUtils.getBitmapSize(bmp));
+
             }
         } catch (Exception ex) {
             KLog.e("Sys", "Error:" + ex.getMessage());
-            mEntry = null;
+            mBitmapDrawable = null;
+        }
+    }
+
+    /**
+     * 释放相机资源
+     */
+    public void freeCameraResource() {
+        if (mCamera != null) {
+            KLog.e("释放相机资源");
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+            isOpenCamera = false;
+            isCameraPreViewStarted = false;
         }
     }
 }

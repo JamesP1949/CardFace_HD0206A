@@ -56,6 +56,7 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
                 mHasBeenDisplayed = true;
             } else {
                 mDisplayRefCount--;
+                KLog.e("this drawable displayed false-->" + mDisplayRefCount);
             }
         }
 

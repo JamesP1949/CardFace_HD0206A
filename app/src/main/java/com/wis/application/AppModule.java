@@ -1,6 +1,7 @@
 package com.wis.application;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
 import com.common.cache.WeakMemoryCache;
@@ -58,5 +59,11 @@ public class AppModule {
     @Provides
     public WeakMemoryCache provideWeakMemoryCache() {
         return new WeakMemoryCache();
+    }
+
+    @AppScope
+    @Provides
+    public Resources provideResources() {
+        return mApp.getResources();
     }
 }

@@ -1,6 +1,7 @@
 package com.wis.bean;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
 /**
  * Created by JamesP949 on 2017/5/3.
@@ -8,7 +9,7 @@ import android.graphics.Bitmap;
  */
 
 public class Compare {
-    private Bitmap mBitmap; // 比对原始图
+    private BitmapDrawable mBitmapDrawable; // 比对原始图
     private Bitmap cropBitmap;  // 剪切的比对人脸图
     private Long aLong; // 时间计数
     private String faceRect; // 人脸坐标信息
@@ -17,12 +18,13 @@ public class Compare {
     private long compareTime; //比对成功时间
     private String cropPath; // 人脸图存储地址
     private String key; // 比对原始图在内存中的key
-    public Bitmap getBitmap() {
-        return mBitmap;
+
+    public BitmapDrawable getBitmapDrawable() {
+        return mBitmapDrawable;
     }
 
-    public void setBitmap(Bitmap bitmap) {
-        mBitmap = bitmap;
+    public void setBitmapDrawable(BitmapDrawable bitmapDrawable) {
+        mBitmapDrawable = bitmapDrawable;
     }
 
     public Bitmap getCropBitmap() {
@@ -90,8 +92,6 @@ public class Compare {
     }
 
     public void clear() {
-        if (mBitmap != null && !mBitmap.isRecycled())
-            mBitmap.recycle();
         if (cropBitmap != null && !cropBitmap.isRecycled())
             cropBitmap.recycle();
         System.gc();

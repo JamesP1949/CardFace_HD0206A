@@ -150,6 +150,7 @@ public class ImageCache {
                 // The removed entry is a recycling drawable, so notify it
                 // that it has been added into the memory cache
                 ((RecyclingBitmapDrawable) value).setIsCached(true);
+                KLog.e("this drawable has been cached!!");
             }
             mMemoryCache.put(key, value);
         }

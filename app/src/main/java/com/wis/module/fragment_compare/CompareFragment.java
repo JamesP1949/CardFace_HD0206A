@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,9 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,6 +22,7 @@ import android.widget.TextView;
 
 import com.common.base.BaseFragment;
 import com.common.cache.ImageReSize;
+import com.common.cache.RecyclingBitmapDrawable;
 import com.common.rx.SchedulersCompat;
 import com.common.utils.ImageUtils;
 import com.common.widget.DrawImageView_;
@@ -39,14 +38,11 @@ import com.wis.widget.CameraPreview_;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.lang.ref.Reference;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -59,19 +55,19 @@ import io.reactivex.functions.Consumer;
 
 public class CompareFragment extends BaseFragment<ComparePresenter_> implements
         CompareContract.View, SensorEventListener {
-    @Bind(R.id.preFrame)
+    @BindView(R.id.preFrame)
     FrameLayout mPreFrame;
-    @Bind(R.id.iv_card)
+    @BindView(R.id.iv_card)
     ImageView mIvCard;
-    @Bind(R.id.iv_detect)
+    @BindView(R.id.iv_detect)
     ImageView mIvDetect;
-    @Bind(R.id.re_compare)
+    @BindView(R.id.re_compare)
     TextView mReCompare;
-    @Bind(R.id.tv_counter)
+    @BindView(R.id.tv_counter)
     TextView mTvCounter;
-    @Bind(R.id.countdown_rl)
+    @BindView(R.id.countdown_rl)
     RelativeLayout mCountdownRl;
-    @Bind(R.id.tv_result)
+    @BindView(R.id.tv_result)
     TextView mTvResult;
     private MyReceiver mReceiver;
     private CameraPreview_ mCameraPreview;
@@ -118,15 +114,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
-        // TODO: inflate a fragment view
-        View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        ButterKnife.bind(this, rootView);
-        return rootView;
-    }
-
-    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCameraPreview = new CameraPreview_(getActivity(), null);
@@ -162,7 +149,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Override
     public void onPause() {
         super.onPause();
-        if (!mDisposable.isDisposed()) {
+        if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
         mSensorManager.unregisterListener(this, mSensor);
@@ -181,7 +168,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
-        ButterKnife.unbind(this);
     }
 
     @Override
@@ -243,6 +229,10 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
                     public void accept(@NonNull Long aLong) throws Exception {
                         clearUI();
                         KLog.e("执行倒计时------");
+                        BitmapDrawable bitmapDrawable = compare.getBitmapDrawable();
+                        if (bitmapDrawable instanceof RecyclingBitmapDrawable) {
+                            ((RecyclingBitmapDrawable) bitmapDrawable).setIsDisplayed(false);
+                        }
                         compare.clear();
                         mPresenter.compare(c_threshold);
                         mApp.setReStartReader();
@@ -262,7 +252,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     }
 
     @Override
-    public Map.Entry<String, Reference<Bitmap>> takePicture_() {
+    public BitmapDrawable takePicture_() {
         if (mCameraPreview == null) return null;
         return mCameraPreview.take();
     }
@@ -315,7 +305,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_LIGHT){
+        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
 //            event.sensor.getVersion()
         }
     }

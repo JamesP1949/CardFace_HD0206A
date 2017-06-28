@@ -29,7 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.reactivex.schedulers.Schedulers;
 
@@ -41,11 +41,11 @@ import io.reactivex.schedulers.Schedulers;
 public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implements QueryContract
         .View {
 
-    @Bind(R.id.et_search)
+    @BindView(R.id.et_search)
     AppCompatEditText mEtSearch;
-    @Bind(R.id.iv_tips)
+    @BindView(R.id.iv_tips)
     ImageView mIvTips;
-    @Bind(R.id.recyclerView)
+    @BindView(R.id.recyclerView)
     EasyRecyclerView mRecyclerView;
 
     @Inject

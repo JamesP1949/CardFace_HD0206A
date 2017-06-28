@@ -6,13 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,8 +21,7 @@ import com.wis.utils.GlobalConstant;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import cn.com.aratek.idcard.IDCardReader;
 
 /**
@@ -36,23 +31,23 @@ import cn.com.aratek.idcard.IDCardReader;
 
 public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadContract.View {
 
-    @Bind(R.id.iv_photo)
+    @BindView(R.id.iv_photo)
     ImageView mIvPhoto;
-    @Bind(R.id.tv_name)
+    @BindView(R.id.tv_name)
     TextView mTvName;
-    @Bind(R.id.tv_sex)
+    @BindView(R.id.tv_sex)
     TextView mTvSex;
-    @Bind(R.id.tv_nation)
+    @BindView(R.id.tv_nation)
     TextView mTvNation;
-    @Bind(R.id.tv_birth)
+    @BindView(R.id.tv_birth)
     TextView mTvBirth;
-    @Bind(R.id.tv_address)
+    @BindView(R.id.tv_address)
     TextView mTvAddress;
-    @Bind(R.id.tv_id)
+    @BindView(R.id.tv_id)
     TextView mTvId;
-    @Bind(R.id.tv_official)
+    @BindView(R.id.tv_official)
     TextView mTvOfficial;
-    @Bind(R.id.tv_valid)
+    @BindView(R.id.tv_valid)
     TextView mTvValid;
     @Inject
     UserConfig mUserConfig;
@@ -116,21 +111,6 @@ public class ReadFragment extends BaseFragment<ReadPresenter> implements ReadCon
     public void onResume() {
         super.onResume();
         register();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
-        // TODO: inflate a fragment view
-        View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        ButterKnife.bind(this, rootView);
-        return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     // 读卡成功刷新UI

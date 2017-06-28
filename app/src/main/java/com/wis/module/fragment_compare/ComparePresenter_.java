@@ -1,9 +1,12 @@
 package com.wis.module.fragment_compare;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 
 import com.common.base.BasePresenter;
+import com.common.cache.RecyclingBitmapDrawable;
 import com.common.cache.WeakMemoryCache;
 import com.common.rx.SchedulersCompat;
 import com.common.utils.FileUtils;
@@ -23,8 +26,6 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-import java.lang.ref.Reference;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -60,7 +61,8 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
     WisMobile mWisMobile;
     @Inject
     App mApp;
-
+    @Inject
+    Resources mResources;
     @Override
     protected void injectDagger() {
         AppCore.getAppComponent().inject(this);
@@ -74,13 +76,16 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                     @Override
                     public Publisher<Compare> apply(@NonNull Long aLong) throws Exception {
                         KLog.e("start---" + System.currentTimeMillis() + " ---" + aLong);
-                        Map.Entry<String, Reference<Bitmap>> entry = mView.takePicture_();
-                        if (entry == null) {
+                        BitmapDrawable drawable = mView.takePicture_();
+                        if (drawable == null) {
                             return Flowable.empty();
                         }
+                        if (drawable instanceof RecyclingBitmapDrawable) {
+                            ((RecyclingBitmapDrawable) drawable).setIsDisplayed(true);
+                        }
                         Compare compare = new Compare();
-                        compare.setBitmap(entry.getValue().get());
-                        compare.setKey(entry.getKey());
+                        compare.setBitmapDrawable(drawable);
+                        compare.setKey("");
                         compare.setaLong(aLong);
                         return Flowable.just(compare);
                     }
@@ -91,16 +96,16 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                     @Override
                     public Publisher<Compare> apply(@NonNull Compare compare) throws Exception {
                         KLog.e("aLong:---" + compare.getaLong());
-                        if (compare.getBitmap() == null) {
+                        if (compare.getBitmapDrawable() == null) {
                             KLog.e("图片被回收掉了-----");
                             return Flowable.empty();
                         }
-                        String[] feature_ = FeatureUtils.extractFeature_(mWisMobile, compare
-                                .getBitmap());
+                        RecyclingBitmapDrawable drawable = (RecyclingBitmapDrawable) compare.getBitmapDrawable();
+                        String[] feature_ = FeatureUtils.extractFeature_(mWisMobile, drawable.getBitmap());
                         // 6. 过滤条件：图片提取的人脸特征不为空
                         if (TextUtils.isEmpty(feature_[1])) {
                             KLog.e("人脸特征过滤---");
-                            mMemoryCache.remove(compare.getKey());
+                            drawable.setIsDisplayed(false);
                             return Flowable.empty();
                         }
                         compare.setFaceRect(feature_[0]);
@@ -119,7 +124,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                         if (compareNotification.isOnNext()) {
                             final Compare compare = compareNotification
                                     .getValue();
-                            Bitmap bitmap = compare.getBitmap();
+                            Bitmap bitmap = compare.getBitmapDrawable().getBitmap();
                             int[] result = StringUtils.split2IntArr(compare.getFaceRect());
                             mView.convertCoordinate(result[0], result[1], result[2],
                                     result[3], bitmap.getWidth(), bitmap.getHeight());
@@ -230,10 +235,7 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                 ",w---" + crop_width + ",h---" + crop_height);
         Bitmap bitmap1 = Bitmap.createBitmap(bitmap, crop_left,
                 crop_top, crop_width, crop_height);
-
-        String key = String.valueOf(System.currentTimeMillis());
-        mMemoryCache.put(key, bitmap1);
-        compare.setCropBitmap(mMemoryCache.get(key));
+        compare.setCropBitmap(bitmap1);
     }
 
     @Override
