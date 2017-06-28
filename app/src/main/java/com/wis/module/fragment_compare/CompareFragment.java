@@ -14,9 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -44,8 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -58,19 +55,19 @@ import io.reactivex.functions.Consumer;
 
 public class CompareFragment extends BaseFragment<ComparePresenter_> implements
         CompareContract.View, SensorEventListener {
-    @Bind(R.id.preFrame)
+    @BindView(R.id.preFrame)
     FrameLayout mPreFrame;
-    @Bind(R.id.iv_card)
+    @BindView(R.id.iv_card)
     ImageView mIvCard;
-    @Bind(R.id.iv_detect)
+    @BindView(R.id.iv_detect)
     ImageView mIvDetect;
-    @Bind(R.id.re_compare)
+    @BindView(R.id.re_compare)
     TextView mReCompare;
-    @Bind(R.id.tv_counter)
+    @BindView(R.id.tv_counter)
     TextView mTvCounter;
-    @Bind(R.id.countdown_rl)
+    @BindView(R.id.countdown_rl)
     RelativeLayout mCountdownRl;
-    @Bind(R.id.tv_result)
+    @BindView(R.id.tv_result)
     TextView mTvResult;
     private MyReceiver mReceiver;
     private CameraPreview_ mCameraPreview;
@@ -111,15 +108,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerBroadcast();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
-        // TODO: inflate a fragment view
-        View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        ButterKnife.bind(this, rootView);
-        return rootView;
     }
 
     @Override
@@ -175,7 +163,6 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
-        ButterKnife.unbind(this);
     }
 
     @Override

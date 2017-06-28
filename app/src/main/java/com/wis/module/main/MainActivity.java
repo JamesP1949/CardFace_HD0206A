@@ -17,13 +17,13 @@ import com.wis.utils.GlobalConstant;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class MainActivity extends BaseToolBarActivity<MainPresenter> implements MainContract.View {
 
-    @Bind(R.id.tv_tips)
+    @BindView(R.id.tv_tips)
     TextView mTvTips;
-    @Bind(R.id.progress_rl)
+    @BindView(R.id.progress_rl)
     RelativeLayout mProgressRl;
 
     @Inject

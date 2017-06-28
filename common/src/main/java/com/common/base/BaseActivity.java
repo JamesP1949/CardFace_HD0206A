@@ -9,6 +9,7 @@ import android.widget.Toast;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by JamesP949 on 2016/11/18.
@@ -18,12 +19,13 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         implements IView {
     @Inject
     protected T mPresenter;
+    private Unbinder mUnbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
-        ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
         // TODO
         injectDagger();
         if (mPresenter != null)
@@ -49,7 +51,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
         if (mPresenter != null)
             mPresenter.detachView();
     }

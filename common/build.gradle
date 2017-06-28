@@ -41,7 +41,7 @@ dependencies {
     // 日志管理库
     compile 'com.github.zhaokaiqiang.klog:library:1.6.0'
     // View注解
-    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.5.1'
     // 列表管理库
     compile 'com.jude:easyrecyclerview:4.4.0'
     // 图片压缩库
