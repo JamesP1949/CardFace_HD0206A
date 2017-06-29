@@ -1,6 +1,8 @@
 *.iml
 .gradle
 /local.properties
+/keystore.properties
+/ziboAndroidKey.store
 /.idea
 .DS_Store
 /build
