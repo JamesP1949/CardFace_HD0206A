@@ -261,7 +261,6 @@ public class QueryActivity extends BaseToolBarActivity<QueryPresenter> implement
     public void onClick() {
         if (!TextUtils.isEmpty(mEtSearch.getEditableText().toString()))
             clearUI();
-
     }
 
     @Override
