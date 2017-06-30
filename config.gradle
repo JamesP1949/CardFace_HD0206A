@@ -1,0 +1,46 @@
+def appcompat_v7_version = "25.3.1"
+def dagger_version = "2.10"
+def test_junit_version = "4.12"
+def opencsv_version = "3.9"
+def butterknife_version = "8.5.1"
+def rxjava_version = "2.0.9"
+def rxandroid_version = "2.0.1"
+def rxbinding2_version = "2.0.0"
+def greendao_version = "3.2.2"
+def klog_version = "1.6.0"
+def easyrecyclerview_version = "4.4.0"
+
+ext {
+    common = [
+            versionCode: 1,
+            versionName: "1.0"
+    ]
+    android = [
+            compileSdkVersion: 25,
+            buildToolsVersion: "25.0.2",
+            applicationId    : "com.wis.cardface_hd0206a",
+            minSdkVersion    : 14,
+            targetSdkVersion : 25
+    ]
+
+    dependencies = [
+            junit                 : "junit:junit:${test_junit_version}",
+            rxjava                : "io.reactivex.rxjava2:rxjava:${rxjava_version}",
+            rxandroid             : "io.reactivex.rxjava2:rxandroid:${rxandroid_version}",
+            rxbinding_appcompat_v7: "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:${rxbinding2_version}",
+            butterknife           : "com.jakewharton:butterknife:${butterknife_version}",
+            appcompat_v7          : "com.android.support:appcompat-v7:${appcompat_v7_version}",
+            dagger                : "com.google.dagger:dagger:${dagger_version}",
+            recyclerview          : "com.android.support:recyclerview-v7:${appcompat_v7_version}",
+            klog                  : "com.github.zhaokaiqiang.klog:library:${klog_version}",
+            easyrecyclerview      : "com.jude:easyrecyclerview:${easyrecyclerview_version}",
+            greendao              : "org.greenrobot:greendao:${greendao_version}",
+            opencsv               : "com.opencsv:opencsv:${opencsv_version}"
+    ]
+
+    apt = [
+            dagger_compiler     : "com.google.dagger:dagger-compiler:${dagger_version}",
+            butterknife_compiler: "com.jakewharton:butterknife-compiler:${butterknife_version}"
+    ]
+
+}

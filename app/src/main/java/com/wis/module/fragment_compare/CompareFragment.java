@@ -144,7 +144,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
     @Override
     public void onPause() {
         super.onPause();
-        if (!mDisposable.isDisposed()) {
+        if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
         mSensorManager.unregisterListener(this, mSensor);
@@ -296,7 +296,7 @@ public class CompareFragment extends BaseFragment<ComparePresenter_> implements
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_LIGHT){
+        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
 //            event.sensor.getVersion()
         }
     }

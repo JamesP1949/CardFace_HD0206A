@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.common.versionCode
+        versionName rootProject.ext.common.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -31,28 +31,25 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    // RxJava
-    compile 'io.reactivex.rxjava2:rxjava:2.0.9'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
-    // 日志管理库
-    compile 'com.github.zhaokaiqiang.klog:library:1.6.0'
-    // View注解
-    compile 'com.jakewharton:butterknife:8.5.1'
-    // 列表管理库
-    compile 'com.jude:easyrecyclerview:4.4.0'
+    testCompile rootProject.ext.dependencies.junit
+    compile rootProject.ext.dependencies.appcompat_v7
+    compile rootProject.ext.dependencies.recyclerview
+    compile rootProject.ext.dependencies.rxjava
+    compile rootProject.ext.dependencies.rxandroid
+    compile rootProject.ext.dependencies.rxbinding_appcompat_v7
+    compile rootProject.ext.dependencies.klog
+    compile rootProject.ext.dependencies.easyrecyclerview
+    compile rootProject.ext.dependencies.dagger
+    compile rootProject.ext.dependencies.butterknife
+    apt rootProject.ext.apt.dagger_compiler
+    apt rootProject.ext.apt.butterknife_compiler
+
     // 图片压缩库
 //    compile('me.shaohui.advancedluban:library:1.3.5', {
 //        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
 //        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
 //    })
-    // 依赖注入
-    apt 'com.google.dagger:dagger-compiler:2.10'
-    compile 'com.google.dagger:dagger:2.10' // dagger2
+
 //    provided 'org.glassfish:javax.annotation:10.0-b28'
-//    compile 'com.google.dagger:dagger-android:2.10'
 
 }
