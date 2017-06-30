@@ -171,7 +171,6 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                             if (compare.getCompareScore() >= threshold) {
                                 mView.updateUI(true, compare);
                             } else {
-//                                saveInDB(compare);
                                 mView.updateUI(false, compare);
                             }
                         }
@@ -291,6 +290,12 @@ public class ComparePresenter_ extends BasePresenter<CompareContract.View> imple
                         mApp,
                         String.valueOf(compare.getCompareTime()),
                         compare.getCropBitmap()));
+                /*
+                // 测试比对照片
+                person.setDetectPhotoPath(FileUtils.saveBitmap2File(
+                        mApp,
+                        String.valueOf(compare.getCompareTime()),
+                        compare.getBitmap()));*/
                 long insert = mDaoManager.insertPerson(person);
                 KLog.e("插入数据成功---insert：" + insert);
             }

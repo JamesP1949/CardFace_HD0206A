@@ -22,6 +22,7 @@ public class SettingsActivity extends BaseToolBarActivity {
     @Override
     protected void injectDagger() {
         // do nothing...
+
     }
 
     @Override
@@ -33,5 +34,6 @@ public class SettingsActivity extends BaseToolBarActivity {
         FragmentTransaction beginTransaction = fragmentManager.beginTransaction();
         beginTransaction.replace(R.id.frame_content, new SettingsFragment());
         beginTransaction.commit();
+
     }
 }

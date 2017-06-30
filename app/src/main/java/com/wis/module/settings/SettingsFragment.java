@@ -1,17 +1,25 @@
 package com.wis.module.settings;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 
+import com.socks.library.KLog;
 import com.wis.R;
 import com.wis.application.App;
 import com.wis.application.AppCore;
+import com.wis.config.UserConfig;
+import com.wis.face.WisMobile;
 import com.wis.utils.GlobalConstant;
 
 import javax.inject.Inject;
+
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by JamesP949 on 2017/5/10.
@@ -26,6 +34,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference
     ListPreference mThresholdPreference; // 比对阈值
     @Inject
     App mApp;
+    /* ***测试用****/
+    @Inject
+    WisMobile mWisMobile;
+    @Inject
+    UserConfig mUserConfig;
+    /* ***测试用****/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +58,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference
         mTimePreference.setOnPreferenceClickListener(this);
         mThresholdPreference.setOnPreferenceChangeListener(this);
         mThresholdPreference.setOnPreferenceClickListener(this);
+        init();
     }
 
     @Override
@@ -73,5 +88,21 @@ public class SettingsFragment extends PreferenceFragment implements Preference
         }
         return false;*/
         return true;
+    }
+
+    // 测试
+    private void init() {
+        Schedulers.newThread().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                String dirPath = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath();
+                Bitmap bitmap = BitmapFactory.decodeFile(dirPath + "/0.jpg");
+                float[] floats = mWisMobile.detectFace(bitmap);
+                float[] idFloat = mUserConfig.getFaceFeature();
+                float feature = mWisMobile.compare2Feature(floats, idFloat);
+                KLog.e("比对结果：" + feature);
+            }
+        });
     }
 }
